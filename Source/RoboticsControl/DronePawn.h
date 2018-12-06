@@ -69,7 +69,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	UArrowComponent*ArrowRight;
 
-	void SetMass(const float& NewMass);
+	UFUNCTION(BlueprintCallable)
+	void GetRotorForcesByInputs(const float& U1, const FVector& U2, FVector& FrontForce, FVector& BackForce, FVector& LeftForce, FVector& RightForce);
+
+	UFUNCTION(BlueprintCallable)
+	void SetForce(UArrowComponent* Arrow, const FVector& Force);
+
+	void AdjustThrusts(float U1, const FVector& U2);
 
 	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	//UFloatingPawnMovement* FloatingPawnMovement;
@@ -126,7 +132,7 @@ public:
 	FORCEINLINE float GetMass() { return Mass; }
 
 	UFUNCTION(BlueprintSetter)
-	void SetMass(const float& NewMass) { Mass = NewMass; }
+	void SetMass(const float& NewMass);
 
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE float GetArmLength() { return ArmLength; }
