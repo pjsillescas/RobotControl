@@ -8,6 +8,40 @@
 #include "Runtime/Engine/Classes/GameFramework/FloatingPawnMovement.h"
 #include "DronePawn.generated.h"
 
+USTRUCT(BlueprintType)
+struct FQuadRotorState
+{
+	GENERATED_BODY()
+	/*
+	state: The current state of the robot with the following fields:
+	state.pos = [x; y; z], state.vel = [x_dot; y_dot; z_dot],
+	state.rot = [phi; theta; psi], state.omega = [p; q; r]
+	*/
+	FVector Position;
+	FVector Velocity;
+
+	FVector Rotation;
+	FVector AngularVelocity;
+};
+
+USTRUCT(BlueprintType)
+struct FQuadRotorDesiredState
+{
+	GENERATED_BODY()
+	/*
+	des_state: The desired states are:
+	des_state.pos = [x; y; z], des_state.vel = [x_dot; y_dot; z_dot],
+	des_state.acc = [x_ddot; y_ddot; z_ddot], des_state.yaw,
+	des_state.yaw_dot
+	*/
+	FVector Position;
+	FVector Velocity;
+	FVector Acceleration;
+
+	float Yaw;
+	float YawDot;
+};
+
 UCLASS(Blueprintable)
 class ROBOTICSCONTROL_API ADronePawn : public APawn
 {
@@ -29,6 +63,16 @@ protected:
 	FVector DroneVelocity;
 
 	FVector AddFrictionForces(FVector Velocity);
+
+	FQuadRotorState State;
+	class AQuadPDAIController* Controller;
+
+
+	UFUNCTION(BlueprintGetter)
+	FORCEINLINE FQuadRotorState GetState() { return State; };
+
+	UFUNCTION(BlueprintSetter)
+	void SetState(const FQuadRotorState& NewState) { this->State = State; };
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite, Category = "Physical Model")
 	float DragResistance;

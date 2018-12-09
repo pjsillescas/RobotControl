@@ -4,6 +4,8 @@
 #include "Runtime/Engine/Classes/GameFramework/PawnMovementComponent.h"
 #include "Runtime/Engine/Classes/Components/StaticMeshComponent.h"
 
+#include "QuadPDAIController.h"
+
 void ADronePawn::InitializeArrows(const FObjectInitializer& OI)
 {
 	ArrowFront = OI.CreateDefaultSubobject <UArrowComponent>(this, TEXT("ArrowFront"));
@@ -86,7 +88,7 @@ ADronePawn::ADronePawn(const FObjectInitializer& OI): Super(OI)
 void ADronePawn::BeginPlay()
 {
 	Super::BeginPlay();
-
+	Controller = Cast<AQuadPDAIController>(GetController());
 }
 
 // Called every frame
