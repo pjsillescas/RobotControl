@@ -17,10 +17,14 @@ struct FQuadRotorState
 	state.pos = [x; y; z], state.vel = [x_dot; y_dot; z_dot],
 	state.rot = [phi; theta; psi], state.omega = [p; q; r]
 	*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FVector Position;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FVector Velocity;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FVector Rotation;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FVector AngularVelocity;
 };
 
@@ -34,11 +38,16 @@ struct FQuadRotorDesiredState
 	des_state.acc = [x_ddot; y_ddot; z_ddot], des_state.yaw,
 	des_state.yaw_dot
 	*/
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
 	FVector Position;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FVector Velocity;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FVector Acceleration;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	float Yaw;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	float YawDot;
 };
 
@@ -64,39 +73,41 @@ protected:
 
 	FVector AddFrictionForces(FVector Velocity);
 
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	FQuadRotorState State;
+
 	class AQuadPDAIController* Controller;
 
-
-	UFUNCTION(BlueprintGetter)
-	FORCEINLINE FQuadRotorState GetState() { return State; };
-
-	UFUNCTION(BlueprintSetter)
-	void SetState(const FQuadRotorState& NewState) { this->State = State; };
-
-	UPROPERTY(VisibleAnywhere,BlueprintReadWrite, Category = "Physical Model")
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Physical Model")
 	float DragResistance;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Physical Model")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Physical Model")
 	FVector MInertia;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Physical Model")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Physical Model")
 	float MinTorque;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Physical Model")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Physical Model")
 	float MaxTorque;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Physical Model")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Physical Model")
 	float MotorForceConstant;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Physical Model")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Physical Model")
 	float MotorMomentConstant;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Physical Model")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Physical Model")
 	float ArmLength;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,Category = "Physical Model")
 	float Mass;
 
-	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Physical Model")
+	FVector ForceFront;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Physical Model")
+	FVector ForceBack;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Physical Model")
+	FVector ForceLeft;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Physical Model")
+	FVector ForceRight;
 	
 	UFUNCTION(BlueprintCallable)
 	void GetRotorForces(FVector& FrontForce, FVector& BackForce, FVector& LeftForce, FVector& RightForce);
@@ -195,6 +206,13 @@ public:
 
 	UFUNCTION(BlueprintSetter)
 	void SetMaxTorque(const float& NewMaxTorque) { MaxTorque = NewMaxTorque; }
+
+	UFUNCTION(BlueprintGetter,BlueprintCallable)
+	FORCEINLINE FQuadRotorState GetRobotState() { return State; };
+
+	UFUNCTION(BlueprintSetter)
+	void SetRobotState(const FQuadRotorState& NewState) { this->State = State; };
+
 
 public:
 	// Called every frame

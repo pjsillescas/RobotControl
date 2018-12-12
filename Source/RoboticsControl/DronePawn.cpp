@@ -35,15 +35,12 @@ void ADronePawn::InitializeArrows(const FObjectInitializer& OI)
 
 void ADronePawn::SetMass(const float& NewMass)
 {
-	FBodyInstance* BodyInst = Mesh->GetBodyInstance();
-
-	if (BodyInst == nullptr) return;
-
-	// New Scale 
-	BodyInst->MassScale = NewMass;
-
-	// Trigger Update! 
-	BodyInst->UpdateMassProperties();
+	float Mass = Mesh->GetMass();
+//	UE_LOG(LogTemp, Warning, TEXT(">>>> Starting Mass = %s"), *FString::SanitizeFloat(Mass));
+	Mesh->SetMassOverrideInKg(NAME_None, NewMass);
+	Mesh->GetBodyInstance()->UpdateMassProperties();
+	Mass = Mesh->GetMass();
+//	UE_LOG(LogTemp, Warning, TEXT(">>>> New Mass = %s"), *FString::SanitizeFloat(Mass));
 }
 
 // Sets default values
@@ -56,7 +53,8 @@ ADronePawn::ADronePawn(const FObjectInitializer& OI): Super(OI)
 	
 	RootComponent = Mesh;
 	Mesh->SetSimulatePhysics(true);
-	
+	Mesh->GetBodyInstance()->bOverrideMass = true;
+
 	
 	InitializeArrows(OI);
 	
@@ -89,6 +87,7 @@ void ADronePawn::BeginPlay()
 {
 	Super::BeginPlay();
 	Controller = Cast<AQuadPDAIController>(GetController());
+	SetMass(GetMass());
 }
 
 // Called every frame
@@ -105,8 +104,6 @@ void ADronePawn::Tick(float DeltaTime)
 
 void ADronePawn::AdjustThrusts(float U1, const FVector& U2)
 {
-	FVector ForceFront, ForceBack, ForceLeft, ForceRight;
-
 	GetRotorForcesByInputs(U1, U2, ForceFront, ForceBack, ForceLeft, ForceRight);
 
 	SetForce(ArrowFront, ForceFront);
@@ -130,7 +127,7 @@ void ADronePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 FVector ADronePawn::GetWeight()
 {
 	UWorld* World = GetWorld();
-	
+
 	FVector gravityVector(0,0,-World->GetGravityZ());
 	return Mesh->GetMass() * gravityVector;
 }
@@ -146,7 +143,7 @@ FVector ADronePawn::AddFrictionForces(FVector Velocity)
 void ADronePawn::GetRotorForces(FVector& FrontForce, FVector& BackForce, FVector& LeftForce, FVector& RightForce)
 {
 	FVector HoverForce = ArrowFront->GetComponentTransform().GetRotation().GetForwardVector() * GetWeight().Size() * 0.25 + AddFrictionForces(DroneVelocity);
-	
+
 	FrontForce = HoverForce;
 	BackForce = HoverForce;
 	LeftForce = HoverForce;
